@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider  = "postgresql"
+}
+
+enum Role {
+  MAHASISWA
+  LABORAN
+  KEPALA_LAB
+}
+
+enum Kondisi {
+  BAIK
+  RUSAK
+}
+
+enum StatusPinjaman {
+  PENDING
+  DIPINJAM
+  SELESAI
+  DITOLAK
+}
+
+model User {
+  id        String      @id @default(cuid())
+  nama      String
+  email     String      @unique
+  password  String
+  role      Role        @default(MAHASISWA)
+  borrowings Borrowing[]
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+}
+
+model Asset {
+  id             String      @id @default(cuid())
+  barcode        String      @unique
+  namaAlat       String
+  stokTotal      Int         @default(1)
+  stokTersedia   Int         @default(1)
+  kondisi        Kondisi     @default(BAIK)
+  borrowings     Borrowing[]
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+}
+
+model Borrowing {
+  id        String         @id @default(cuid())
+  userId    String
+  assetId   String
+  tglPinjam DateTime       @default(now())
+  status    StatusPinjaman @default(PENDING)
+  user      User           @relation(fields: [userId], references: [id])
+  asset     Asset          @relation(fields: [assetId], references: [id])
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+}
