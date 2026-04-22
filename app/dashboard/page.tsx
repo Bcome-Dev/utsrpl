@@ -115,17 +115,12 @@ export default async function DashboardPage() {
             orderBy: { bookingDate: "desc" },
         });
 
-        let allBookings: Awaited<ReturnType<typeof prisma.roomBooking.findMany>> = [];
-        try {
-            allBookings = await prisma.roomBooking.findMany({
-                include: {
-                    user: { select: { nama: true, email: true } },
-                },
-                orderBy: { bookingDate: "desc" },
-            });
-        } catch (e) {
-            console.error("Error fetching allBookings:", e);
-        }
+        const allBookings = await prisma.roomBooking.findMany({
+            include: {
+                user: { select: { nama: true, email: true } },
+            },
+            orderBy: { bookingDate: "desc" },
+        });
 
         return (
             <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
