@@ -1,12 +1,12 @@
 "use client";
 
 import { signIn } from "next-auth/react";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { FlaskConical, Mail, Lock, LogIn, Loader2, AlertCircle } from "lucide-react";
 import Link from "next/link";
 
-export default function LoginPage() {
+function LoginForm() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
@@ -42,6 +42,110 @@ export default function LoginPage() {
     };
 
     return (
+        <div className="rounded-2xl border border-border bg-surface p-8 shadow-xl shadow-primary/5">
+            {error && (
+                <div className="mb-6 flex items-center gap-2 rounded-xl bg-red-500/10 px-4 py-3 text-sm font-medium text-red-600 dark:text-red-400">
+                    <AlertCircle className="h-4 w-4 shrink-0" />
+                    {error}
+                </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-5">
+                {/* Email */}
+                <div>
+                    <label
+                        htmlFor="email"
+                        className="mb-1.5 block text-sm font-medium text-foreground"
+                    >
+                        Email
+                    </label>
+                    <div className="relative">
+                        <Mail className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+                        <input
+                            id="email"
+                            name="email"
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            placeholder="contoh@mahasiswa.ac.id"
+                            required
+                            className="w-full rounded-xl border border-border bg-surface py-3 pl-10 pr-4 text-sm text-foreground outline-none transition-all placeholder:text-muted/60 focus:border-primary/50 focus:ring-4 focus:ring-primary/10"
+                        />
+                    </div>
+                </div>
+
+                {/* Password */}
+                <div>
+                    <label
+                        htmlFor="password"
+                        className="mb-1.5 block text-sm font-medium text-foreground"
+                    >
+                        Password
+                    </label>
+                    <div className="relative">
+                        <Lock className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+                        <input
+                            id="password"
+                            name="password"
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder="Masukkan password"
+                            required
+                            className="w-full rounded-xl border border-border bg-surface py-3 pl-10 pr-4 text-sm text-foreground outline-none transition-all placeholder:text-muted/60 focus:border-primary/50 focus:ring-4 focus:ring-primary/10"
+                        />
+                    </div>
+                </div>
+
+                {/* Submit */}
+                <button
+                    type="submit"
+                    disabled={loading}
+                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-primary-dark py-3 text-sm font-semibold text-white shadow-lg shadow-primary/25 transition-all hover:shadow-xl hover:brightness-110 disabled:cursor-wait disabled:opacity-70"
+                >
+                    {loading ? (
+                        <>
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            Memproses...
+                        </>
+                    ) : (
+                        <>
+                            <LogIn className="h-4 w-4" />
+                            Masuk
+                        </>
+                    )}
+                </button>
+            </form>
+
+            {/* Demo credentials */}
+            <div className="mt-6 rounded-xl bg-surface-hover p-4">
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">
+                    Demo Akun
+                </p>
+                <div className="space-y-1.5 text-xs text-muted">
+                    <div className="flex justify-between">
+                        <span>Mahasiswa:</span>
+                        <span className="font-mono text-foreground">budi@mahasiswa.ac.id</span>
+                    </div>
+                    <div className="flex justify-between">
+                        <span>Laboran:</span>
+                        <span className="font-mono text-foreground">siti@lab.ac.id</span>
+                    </div>
+                    <div className="flex justify-between">
+                        <span>Kepala Lab:</span>
+                        <span className="font-mono text-foreground">ahmad@lab.ac.id</span>
+                    </div>
+                    <div className="mt-2 border-t border-border pt-2 text-center">
+                        Password: <span className="font-mono font-semibold text-foreground">password123</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+export default function LoginPage() {
+    return (
         <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-12">
             {/* Background decorations */}
             <div className="pointer-events-none fixed -left-40 -top-40 h-[500px] w-[500px] rounded-full bg-primary/10 blur-3xl" />
@@ -61,104 +165,14 @@ export default function LoginPage() {
                     </p>
                 </div>
 
-                {/* Login Form Card */}
-                <div className="rounded-2xl border border-border bg-surface p-8 shadow-xl shadow-primary/5">
-                    {error && (
-                        <div className="mb-6 flex items-center gap-2 rounded-xl bg-red-500/10 px-4 py-3 text-sm font-medium text-red-600 dark:text-red-400">
-                            <AlertCircle className="h-4 w-4 shrink-0" />
-                            {error}
-                        </div>
-                    )}
-
-                    <form onSubmit={handleSubmit} className="space-y-5">
-                        {/* Email */}
-                        <div>
-                            <label
-                                htmlFor="email"
-                                className="mb-1.5 block text-sm font-medium text-foreground"
-                            >
-                                Email
-                            </label>
-                            <div className="relative">
-                                <Mail className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
-                                <input
-                                    id="email"
-                                    type="email"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    placeholder="contoh@mahasiswa.ac.id"
-                                    required
-                                    className="w-full rounded-xl border border-border bg-background py-3 pl-10 pr-4 text-sm text-foreground outline-none transition-all placeholder:text-muted/60 focus:border-primary/50 focus:ring-4 focus:ring-primary/10"
-                                />
-                            </div>
-                        </div>
-
-                        {/* Password */}
-                        <div>
-                            <label
-                                htmlFor="password"
-                                className="mb-1.5 block text-sm font-medium text-foreground"
-                            >
-                                Password
-                            </label>
-                            <div className="relative">
-                                <Lock className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
-                                <input
-                                    id="password"
-                                    type="password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    placeholder="Masukkan password"
-                                    required
-                                    className="w-full rounded-xl border border-border bg-background py-3 pl-10 pr-4 text-sm text-foreground outline-none transition-all placeholder:text-muted/60 focus:border-primary/50 focus:ring-4 focus:ring-primary/10"
-                                />
-                            </div>
-                        </div>
-
-                        {/* Submit */}
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-primary-dark py-3 text-sm font-semibold text-white shadow-lg shadow-primary/25 transition-all hover:shadow-xl hover:brightness-110 disabled:cursor-wait disabled:opacity-70"
-                        >
-                            {loading ? (
-                                <>
-                                    <Loader2 className="h-4 w-4 animate-spin" />
-                                    Memproses...
-                                </>
-                            ) : (
-                                <>
-                                    <LogIn className="h-4 w-4" />
-                                    Masuk
-                                </>
-                            )}
-                        </button>
-                    </form>
-
-                    {/* Demo credentials */}
-                    <div className="mt-6 rounded-xl bg-surface-hover p-4">
-                        <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">
-                            Demo Akun
-                        </p>
-                        <div className="space-y-1.5 text-xs text-muted">
-                            <div className="flex justify-between">
-                                <span>Mahasiswa:</span>
-                                <span className="font-mono text-foreground">budi@mahasiswa.ac.id</span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span>Laboran:</span>
-                                <span className="font-mono text-foreground">siti@lab.ac.id</span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span>Kepala Lab:</span>
-                                <span className="font-mono text-foreground">ahmad@lab.ac.id</span>
-                            </div>
-                            <div className="mt-2 border-t border-border pt-2 text-center">
-                                Password: <span className="font-mono font-semibold text-foreground">password123</span>
-                            </div>
-                        </div>
+                {/* Suspense wraps only the part that uses useSearchParams */}
+                <Suspense fallback={
+                    <div className="rounded-2xl border border-border bg-surface p-8 shadow-xl shadow-primary/5 flex items-center justify-center">
+                        <Loader2 className="h-6 w-6 animate-spin text-muted" />
                     </div>
-                </div>
+                }>
+                    <LoginForm />
+                </Suspense>
 
                 {/* Back to home */}
                 <p className="mt-6 text-center text-sm text-muted">
